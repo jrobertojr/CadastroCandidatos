@@ -194,10 +194,12 @@
             // dtgParticipantes
             // 
             this.dtgParticipantes.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dtgParticipantes.ColumnHeadersVisible = false;
             this.dtgParticipantes.Location = new System.Drawing.Point(12, 250);
             this.dtgParticipantes.Name = "dtgParticipantes";
             this.dtgParticipantes.Size = new System.Drawing.Size(713, 289);
             this.dtgParticipantes.TabIndex = 34;
+            this.dtgParticipantes.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dtgParticipantes_CellMouseClick);
             // 
             // lbTituloEditPart
             // 
@@ -428,6 +430,8 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormParticipantes";
+            this.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.RightToLeftLayout = true;
             this.Text = "FormParticipantes";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

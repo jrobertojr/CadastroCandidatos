@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CadastroCandidatos.Log;
+using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -25,39 +26,59 @@ namespace CadastroCandidatos
 
         public void dadosUsuario(bool adm, string usuario)
         {
-            lbUsuarioLogado.Text = usuario;
+            try
+            {
+                lbUsuarioLogado.Text = usuario;
 
-            if (adm == false)
-            {
-                btUsuario.Hide();
+                if (adm == false)
+                {
+                    btUsuario.Hide();
+                }
+                else
+                {
+                    btUsuario.Show();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                btUsuario.Show();
+                MessageBox.Show("Erro dados do Usuario");
+                RegistraLog.Log($"Erro resgatar informações do usuario logado: {ex}");
+                throw;
             }
+            
         }
 
         private void AbrirFormNoPainel<Forms>() where Forms : Form, new()
         {
-            Form formulario;
-            formulario = panelConteudo.Controls.OfType<Forms>().FirstOrDefault();
+            try
+            {
+                Form formulario;
+                formulario = panelConteudo.Controls.OfType<Forms>().FirstOrDefault();
 
-            if (formulario == null)
-            {
-                formulario = new Forms();
-                formulario.TopLevel = false;
-                formulario.Dock = DockStyle.Fill;
-                panelConteudo.Controls.Add(formulario);
-                panelConteudo.Tag = formulario;
-                formulario.Show();
-                formulario.BringToFront();
+                if (formulario == null)
+                {
+                    formulario = new Forms();
+                    formulario.TopLevel = false;
+                    formulario.Dock = DockStyle.Fill;
+                    panelConteudo.Controls.Add(formulario);
+                    panelConteudo.Tag = formulario;
+                    formulario.Show();
+                    formulario.BringToFront();
+                }
+                else
+                {
+                    if (formulario.WindowState == FormWindowState.Minimized)
+                        formulario.WindowState = FormWindowState.Normal;
+                    formulario.BringToFront();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                if (formulario.WindowState == FormWindowState.Minimized)
-                    formulario.WindowState = FormWindowState.Normal;
-                formulario.BringToFront();
+                MessageBox.Show("Erro no sistema");
+                RegistraLog.Log($"Erro ao tentar abrir janela no Panel principal {ex}");
+                throw ex;
             }
+            
         }
 
         private void btFechar_Click(object sender, EventArgs e)
@@ -88,13 +109,22 @@ namespace CadastroCandidatos
 
         private void Suprimir_Bt()
         {
-            btMaximizar.Visible = true;
-            btRestaurar.Visible = true;
+            try
+            {
+                btMaximizar.Visible = true;
+                btRestaurar.Visible = true;
 
-            if (this.WindowState == FormWindowState.Maximized)
-                btMaximizar.Visible = false;
-            else
-                btRestaurar.Visible = false;
+                if (this.WindowState == FormWindowState.Maximized)
+                    btMaximizar.Visible = false;
+                else
+                    btRestaurar.Visible = false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro no sistema");
+                RegistraLog.Log("Erro ao suprimir botões de Maximizar ou Restaurar");
+                throw ex;
+            }
         }
 
         private void btParticipantes_Click(object sender, EventArgs e)

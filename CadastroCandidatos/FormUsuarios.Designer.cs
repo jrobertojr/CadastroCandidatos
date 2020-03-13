@@ -183,6 +183,7 @@
             this.dtgUsuarios.Name = "dtgUsuarios";
             this.dtgUsuarios.Size = new System.Drawing.Size(554, 330);
             this.dtgUsuarios.TabIndex = 10;
+            this.dtgUsuarios.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dtgUsuarios_CellMouseClick);
             // 
             // btCadastrarUsuario
             // 

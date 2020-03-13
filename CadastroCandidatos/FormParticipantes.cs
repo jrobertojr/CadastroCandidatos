@@ -1,4 +1,5 @@
 ﻿using CadastroCandidatos.DataBase;
+using CadastroCandidatos.Log;
 using ClosedXML.Excel;
 using System;
 using System.Data;
@@ -31,6 +32,7 @@ namespace CadastroCandidatos
             catch (Exception ex)
             {
                 MessageBox.Show("Erro ao atualizar dados");
+                RegistraLog.Log($"Erro ao atualizar dados: {ex}");
                 throw ex;
             }
         }
@@ -70,7 +72,8 @@ namespace CadastroCandidatos
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erro ao atualizar dados ComboBox cadastro");
+                MessageBox.Show("Erro ao atualizar dados");
+                RegistraLog.Log($"Erro ao atualizar dados Combobox de Cadastro: {ex}");
                 throw ex;
             }
         }
@@ -90,27 +93,43 @@ namespace CadastroCandidatos
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erro ao atualizar dados ComboBox");
+                MessageBox.Show("Erro ao atualizar dados");
+                RegistraLog.Log($"Erro ao atualizar dados Combobox de Atualização: {ex}");
                 throw ex;
             }
         }
 
+        private void dtgParticipantes_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            int linha = int.Parse(e.RowIndex.ToString());
+            cbSelecionarParticipante.SelectedValue = (int)dtgParticipantes.Rows[linha].Cells[0].Value;
+        }
+
         private void cbSelecionarParticipante_SelectedIndexChanged(object sender, EventArgs e)
         {
-            DataRowView drv = (DataRowView)cbSelecionarParticipante.SelectedItem;
-            var valor = drv["ID"].ToString();
-
-            if (valor != "")
+            try
             {
-                Tabela = Participante.SelectPorId(valor);
+                DataRowView drv = (DataRowView)cbSelecionarParticipante.SelectedItem;
+                var valor = drv["ID"].ToString();
 
-                idUsuario = int.Parse(Tabela.Rows[0]["ID"].ToString());
-                tboxEditNome.Text = Tabela.Rows[0]["NOME"].ToString();
-                mtbEditRg.Text = Tabela.Rows[0]["RG"].ToString();
-                tboxEditEmail.Text = Tabela.Rows[0]["EMAIL"].ToString();
-                mtbEdirWhatsapp.Text = Tabela.Rows[0]["WHATSAPP"].ToString();
-                cbEditEtapa.SelectedItem = Tabela.Rows[0]["ETAPA"].ToString();
-                cbEditStatus.SelectedItem = Tabela.Rows[0]["STATUS"].ToString() == "True" ? "Ativo" : "Inativo";
+                if (valor != "")
+                {
+                    Tabela = Participante.SelectPorId(valor);
+
+                    idUsuario = int.Parse(Tabela.Rows[0]["ID"].ToString());
+                    tboxEditNome.Text = Tabela.Rows[0]["NOME"].ToString();
+                    mtbEditRg.Text = Tabela.Rows[0]["RG"].ToString();
+                    tboxEditEmail.Text = Tabela.Rows[0]["EMAIL"].ToString();
+                    mtbEdirWhatsapp.Text = Tabela.Rows[0]["WHATSAPP"].ToString();
+                    cbEditEtapa.SelectedItem = Tabela.Rows[0]["ETAPA"].ToString();
+                    cbEditStatus.SelectedItem = Tabela.Rows[0]["STATUS"].ToString() == "True" ? "Ativo" : "Inativo";
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Erro ao selecionar Participante");
+                RegistraLog.Log($"Erro do ComboBox ao selecionar Participante: {ex}");
+                throw ex;
             }
         }
 
@@ -147,6 +166,7 @@ namespace CadastroCandidatos
             catch (Exception ex)
             {
                 MessageBox.Show("Erro ao cadastrar participante");
+                RegistraLog.Log($"Erro ao cadastrar participante: {ex}");
                 throw ex;
             }
         }
@@ -182,6 +202,7 @@ namespace CadastroCandidatos
             catch (Exception ex)
             {
                 MessageBox.Show("Erro ao atualizar dados");
+                RegistraLog.Log($"Erro ao atualizar dados: {ex}");
                 throw ex;
             }
         }
@@ -190,6 +211,8 @@ namespace CadastroCandidatos
         {
             try
             {
+                DataTable datatable = Participante.Select();
+
                 string folderPath = "C:\\Excel\\";
 
                 if (!Directory.Exists(folderPath))
@@ -198,7 +221,7 @@ namespace CadastroCandidatos
                 }
                 using (XLWorkbook wb = new XLWorkbook())
                 {
-                    wb.Worksheets.Add(Tabela, "Customers");
+                    wb.Worksheets.Add(datatable, "Customers");
                     wb.SaveAs(folderPath + $"Participantes{DateTime.Now.ToString("dd-MM-yyyy HH-mm-ss")}.xlsx");
                 }
 
@@ -206,7 +229,8 @@ namespace CadastroCandidatos
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erro ao gerar arquivo xlsx");
+                MessageBox.Show("Erro ao exportar para Excel");
+                RegistraLog.Log($"Erro ao gerar arquivo .xlsx: {ex}");
                 throw;
             }
 

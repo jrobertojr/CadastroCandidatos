@@ -1,4 +1,5 @@
 ﻿using CadastroCandidatos.DataBase;
+using CadastroCandidatos.Log;
 using System;
 using System.Data;
 using System.Windows.Forms;
@@ -27,6 +28,7 @@ namespace CadastroCandidatos
             catch (Exception ex)
             {
                 MessageBox.Show("Erro ao atualizar dados");
+                RegistraLog.Log($"Erro ao atualizar dados: {ex}");
                 throw ex;
             }        
         }
@@ -55,9 +57,16 @@ namespace CadastroCandidatos
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Erro ao atualizar dados ComboBox");
+                MessageBox.Show("Erro ao atualizar dados");
+                RegistraLog.Log($"Erro ao atualizar dados: {ex}");
                 throw ex;
             }
+        }
+
+        private void dtgUsuarios_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            int linha = int.Parse(e.RowIndex.ToString());
+            cboxUsuarios.SelectedValue = dtgUsuarios.Rows[linha].Cells[1].Value.ToString();
         }
 
         private void btCadastrarUsuario_Click(object sender, EventArgs e)
@@ -67,6 +76,10 @@ namespace CadastroCandidatos
                 if (tboxUsuario.Text == "")
                 {
                     MessageBox.Show("Usuario deve ser preenchido");
+                }
+                else if (tboxSenha.Text.Length < 6)
+                {
+                    MessageBox.Show("Senha deve ter no minimo 6 caracteres");
                 }
                 else if (tboxSenha.Text == "")
                 {
@@ -94,27 +107,38 @@ namespace CadastroCandidatos
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Erro ao inserir dados");
+                MessageBox.Show("Erro ao inserir usuario");
+                RegistraLog.Log($"Erro ao inserir usuario: {ex}");
                 throw ex;
             }
         }
 
         private void cboxUsuarios_SelectedIndexChanged(object sender, EventArgs e)
         {
-            DataRowView drv = (DataRowView)cboxUsuarios.SelectedItem;
-            var valor = drv["usuario"].ToString();
-
-            if (valor != "")
+            try
             {
-                Tabela = Usuario.SelectPorUsuario(valor);
+                DataRowView drv = (DataRowView)cboxUsuarios.SelectedItem;
+                var valor = drv["usuario"].ToString();
 
-                idUsuario = int.Parse(Tabela.Rows[0]["id_usuario"].ToString());
-                tboxEditUsuario.Text = Tabela.Rows[0]["usuario"].ToString();
-                tboxEditSenha.Text = Tabela.Rows[0]["senha"].ToString();
-                tboxEditNome.Text = Tabela.Rows[0]["nome"].ToString();
-                cbEditAdm.SelectedItem = (bool)Tabela.Rows[0]["adm"] == true ? "Sim" : "Não";
-                cbEditStatus.SelectedItem = (bool)Tabela.Rows[0]["status"] == true ? "Ativo" : "Inativo";
+                if (valor != "")
+                {
+                    Tabela = Usuario.SelectPorUsuario(valor);
+
+                    idUsuario = int.Parse(Tabela.Rows[0]["id_usuario"].ToString());
+                    tboxEditUsuario.Text = Tabela.Rows[0]["usuario"].ToString();
+                    tboxEditSenha.Text = Tabela.Rows[0]["senha"].ToString();
+                    tboxEditNome.Text = Tabela.Rows[0]["nome"].ToString();
+                    cbEditAdm.SelectedItem = (bool)Tabela.Rows[0]["adm"] == true ? "Sim" : "Não";
+                    cbEditStatus.SelectedItem = (bool)Tabela.Rows[0]["status"] == true ? "Ativo" : "Inativo";
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao selecionar usuario");
+                RegistraLog.Log($"Erro ao selecionar usuario: {ex}");
+                throw;
+            }
+            
         }
 
         private void btAtualizarUser_Click(object sender, EventArgs e)
@@ -131,6 +155,7 @@ namespace CadastroCandidatos
             catch (Exception ex)
             {
                 MessageBox.Show("Erro ao atualizar dados");
+                RegistraLog.Log($"Erro ao atualizar dados: {ex}");
                 throw ex;
             }
         }
